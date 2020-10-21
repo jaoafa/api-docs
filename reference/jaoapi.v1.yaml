@@ -8,7 +8,7 @@ info:
     url: 'https://github.com/jaoafa/jao-Minecraft-Server/blob/master/jaoLICENSE.md'
   contact:
     url: 'https://jaoafa.com/contact'
-    name: jao Minecraft Server Contact
+    name: Contact
     email: info@jaoafa.com
   termsOfService: 'https://jaoafa.com/rule'
 servers:
@@ -111,5 +111,7 @@ paths:
       description: |-
         ユーザオブジェクトを返します。
         このエンドポイントで返されるMinecraft IDは最新でない可能性があることに注意してください。jao Minecraft Serverの最終ログインの情報から取得されます。
+      parameters: []
 tags:
   - name: Users
+security: []
