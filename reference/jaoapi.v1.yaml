@@ -141,6 +141,8 @@ components:
           local: 0
           local_ids: []
           updated_at: '2020-05-05 04:16:50'
+      x-tags:
+        - User-MCBans
     Basic-Response:
       type: object
       title: Basic-Response
@@ -243,6 +245,8 @@ components:
         - lostrep
         - date
         - updated_at
+      x-tags:
+        - User-MCBans
   securitySchemes: {}
 paths:
   /users:
@@ -421,9 +425,6 @@ paths:
   /users/mcbans:
     get:
       summary: Get MCBans User Data
-      tags:
-        - Users
-        - MCBans
       responses:
         '200':
           description: OK
@@ -478,6 +479,8 @@ paths:
           name: uuid
           description: Minecraft UUID (with hyphen)
           required: true
+      tags:
+        - User-MCBans
   '/users/mcbans/ban/{banid}':
     parameters:
       - schema:
@@ -492,8 +495,7 @@ paths:
     get:
       summary: Get MCBans Ban Data
       tags:
-        - Users
-        - MCBans
+        - User-MCBans
       responses:
         '200':
           description: OK
@@ -535,5 +537,5 @@ paths:
       description: MCBans Banデータオブジェクトを返します。
 tags:
   - name: Users
-  - name: MCBans
+  - name: User-MCBans
 security: []
