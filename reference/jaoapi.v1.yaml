@@ -69,12 +69,12 @@ components:
         permission:
           type: string
           enum:
-            - Admin
-            - Moderator
-            - Regular
-            - Verified
-            - Default
-          example: Admin
+            - admin
+            - moderator
+            - regular
+            - verified
+            - default
+          example: admin
           description: Permission Group
         lastlogin:
           type: string
@@ -88,20 +88,9 @@ components:
         - lastlogin
   securitySchemes: {}
 paths:
-  '/users/{minecraft_id}':
-    parameters:
-      - schema:
-          type: string
-          example: X4Z
-          pattern: '^[A-Za-z0-9_]+$'
-          minLength: 3
-          maxLength: 16
-        name: minecraft_id
-        in: path
-        required: true
-        description: Minecraft ID
+  /users:
     get:
-      summary: GetUser
+      summary: Get User
       tags:
         - Users
       responses:
@@ -124,7 +113,7 @@ paths:
                   version:
                     type: string
                     minLength: 1
-                    description: GitHub commit ID
+                    description: GitHub Commit ID
                   data:
                     $ref: '#/components/schemas/User'
                 required:
@@ -132,7 +121,160 @@ paths:
                   - code
                   - version
                   - data
-      operationId: get-users-minecraft.id
+              examples:
+                'example: X4Z':
+                  value:
+                    status: true
+                    code: 200
+                    version: 91945bb4463e9b2ca0d1e82a0224f16cf1003fa3
+                    data:
+                      mcid: X4Z
+                      uuid: 5799296a-d1ec-4252-93bd-440bb9caa65c
+                      permission: admin
+                      lastlogin: '2020-10-18 17:22:39'
+                      discordid: '206692134991036416'
+                      voteCount: 1431
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    description: Response status
+                  code:
+                    type: integer
+                    description: HTTP Status code
+                  version:
+                    type: string
+                    minLength: 1
+                    description: GitHub Commit ID
+                  message:
+                    type: string
+                    minLength: 1
+                required:
+                  - status
+                  - code
+                  - version
+                  - message
+              examples:
+                example:
+                  value:
+                    status: false
+                    code: 404
+                    version: 91945bb4463e9b2ca0d1e82a0224f16cf1003fa3
+                    message: No user found with that Minecraft ID.
+      operationId: get-users-minecraft
+      description: |-
+        ユーザオブジェクトを返します。
+        このエンドポイントで返されるMinecraft IDは最新でない可能性があることに注意してください。jao Minecraft Serverの最終ログインの情報から取得されます。
+
+        パラメータはすべてOptionalですが、いずれかかのパラメータは必須です。
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: mcid
+          description: Minecraft ID
+        - schema:
+            type: string
+          in: query
+          name: uuid
+          description: Minecraft UUID
+        - schema:
+            type: string
+          in: query
+          name: discordid
+          description: Discord ID
+  '/users/{minecraft_id}':
+    parameters:
+      - schema:
+          type: string
+        name: minecraft_id
+        in: path
+        required: true
+    get:
+      summary: Get User
+      tags:
+        - Users
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    description: Response status
+                  code:
+                    type: integer
+                    example: 200
+                    description: HTTP Status code
+                  version:
+                    type: string
+                    minLength: 1
+                    description: GitHub Commit ID
+                  data:
+                    $ref: '#/components/schemas/User'
+                required:
+                  - status
+                  - code
+                  - version
+                  - data
+              examples:
+                'example: X4Z':
+                  value:
+                    status: true
+                    code: 200
+                    version: 91945bb4463e9b2ca0d1e82a0224f16cf1003fa3
+                    data:
+                      mcid: X4Z
+                      uuid: 5799296a-d1ec-4252-93bd-440bb9caa65c
+                      permission: admin
+                      lastlogin: '2020-10-18 17:22:39'
+                      discordid: '206692134991036416'
+                      voteCount: 1431
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    description: Response status
+                  code:
+                    type: integer
+                    description: HTTP Status code
+                  version:
+                    type: string
+                    minLength: 1
+                    description: GitHub Commit ID
+                  message:
+                    type: string
+                    minLength: 1
+                required:
+                  - status
+                  - code
+                  - version
+                  - message
+              examples:
+                example:
+                  value:
+                    status: false
+                    code: 404
+                    version: 91945bb4463e9b2ca0d1e82a0224f16cf1003fa3
+                    message: No user found with that Minecraft ID.
+      operationId: get-users-minecraft_id
       description: |-
         ユーザオブジェクトを返します。
         このエンドポイントで返されるMinecraft IDは最新でない可能性があることに注意してください。jao Minecraft Serverの最終ログインの情報から取得されます。
