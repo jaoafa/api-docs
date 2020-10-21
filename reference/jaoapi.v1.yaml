@@ -1,0 +1,115 @@
+openapi: 3.0.0
+info:
+  title: jaoapi v1
+  version: '1.0'
+  description: jao Minecraft Server API Version 1
+  license:
+    name: jaoLicense
+    url: 'https://github.com/jaoafa/jao-Minecraft-Server/blob/master/jaoLICENSE.md'
+  contact:
+    url: 'https://jaoafa.com/contact'
+    name: jao Minecraft Server Contact
+    email: info@jaoafa.com
+  termsOfService: 'https://jaoafa.com/rule'
+servers:
+  - url: 'https://api.jaoafa.com/v1'
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      x-examples: {}
+      description: jao Minecraft Server Minecraft サービスにログインしたことのある利用者の情報オブジェクト
+      properties:
+        mcid:
+          type: string
+          example: X4Z
+          pattern: '^[A-Za-z0-9_]+$'
+          minLength: 3
+          maxLength: 16
+          description: Minecraft ID
+        uuid:
+          type: string
+          format: uuid
+          example: 5799296a-d1ec-4252-93bd-440bb9caa65c
+          pattern: '^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$'
+          minLength: 36
+          maxLength: 36
+          description: Minecraft UUID (with hyphen)
+        discordid:
+          type: string
+          example: '206692134991036416'
+          pattern: '^[0-9]+$'
+          description: Discord ID
+        permission:
+          type: string
+          enum:
+            - Admin
+            - Moderator
+            - Regular
+            - Verified
+            - Default
+          example: Admin
+          description: Permission Group
+        lastlogin:
+          type: string
+          example: '2020-04-12 09:03:58'
+          description: Last login time
+      required:
+        - mcid
+        - uuid
+        - discordid
+        - permission
+        - lastlogin
+  securitySchemes: {}
+paths:
+  '/users/{minecraft_id}':
+    parameters:
+      - schema:
+          type: string
+          example: X4Z
+          pattern: '^[A-Za-z0-9_]+$'
+          minLength: 3
+          maxLength: 16
+        name: minecraft_id
+        in: path
+        required: true
+        description: Minecraft ID
+    get:
+      summary: GetUser
+      tags:
+        - Users
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    description: Response status
+                  code:
+                    type: integer
+                    example: 200
+                    description: HTTP Status code
+                  version:
+                    type: string
+                    minLength: 1
+                    description: GitHub commit ID
+                  data:
+                    $ref: '#/components/schemas/User'
+                required:
+                  - status
+                  - code
+                  - version
+                  - data
+      operationId: get-users-minecraft.id
+      description: |-
+        ユーザオブジェクトを返します。
+        このエンドポイントで返されるMinecraft IDは最新でない可能性があることに注意してください。jao Minecraft Serverの最終ログインの情報から取得されます。
+tags:
+  - name: Users
