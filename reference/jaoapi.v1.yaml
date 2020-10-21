@@ -175,6 +175,74 @@ components:
         - status
         - code
         - version
+    MCBans-User-Ban:
+      description: MCBans Banデータオブジェクト
+      type: object
+      title: MCBans-User-Ban
+      x-examples:
+        'example: X4Z (5799296a-d1ec-4252-93bd-440bb9caa65)':
+          mcid: X4Z
+          banned_by: X4Z
+          reason: griefing
+          server: play.jaoafa.com
+          type: global
+          lostrep: 1
+          date: '2020-01-01 00:00:00'
+          updated_at: '2020-01-01 00:00:00'
+      properties:
+        mcid:
+          type: string
+          minLength: 3
+          pattern: '^[A-Za-z0-9_]+$'
+          maxLength: 16
+          example: X4Z
+          description: Minecraft ID
+        banned_by:
+          type: string
+          minLength: 3
+          description: Minecraft ID of the user who executed Ban
+          pattern: '^[A-Za-z0-9_]+$'
+          example: X4Z
+          maxLength: 16
+        reason:
+          type: string
+          minLength: 1
+          description: Ban Reason
+          example: griefing
+        server:
+          type: string
+          minLength: 1
+          example: play.jaoafa.com
+          description: Server on which Ban was run
+        type:
+          type: string
+          minLength: 1
+          description: Ban Type
+        lostrep:
+          type: number
+          example: 1
+          description: Lost Reputation
+        date:
+          type: string
+          minLength: 1
+          description: Ban datetime (JST)
+          example: '2020-01-01 00:00:00'
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$'
+        updated_at:
+          type: string
+          minLength: 1
+          description: Data update datetime (JST)
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$'
+          example: '2020-01-01 00:00:00'
+      required:
+        - mcid
+        - banned_by
+        - reason
+        - server
+        - type
+        - lostrep
+        - date
+        - updated_at
   securitySchemes: {}
 paths:
   /users:
@@ -410,6 +478,61 @@ paths:
           name: uuid
           description: Minecraft UUID (with hyphen)
           required: true
+  '/users/mcbans/ban/{banid}':
+    parameters:
+      - schema:
+          type: integer
+          example: 1
+          pattern: '^[0-9]+$'
+          minimum: 1
+        name: banid
+        in: path
+        required: true
+        description: MCBans BanID
+    get:
+      summary: Get MCBans Ban Data
+      tags:
+        - Users
+        - MCBans
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    description: Response Status
+                  code:
+                    type: integer
+                    description: HTTP Status Code
+                  version:
+                    type: string
+                    minLength: 1
+                    description: API Minor Version (GitHub Commit ID)
+                  data:
+                    $ref: '#/components/schemas/MCBans-User-Ban'
+                required:
+                  - status
+                  - code
+                  - version
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basic-Response'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basic-Response'
+      operationId: get-users-mcbans-ban-banid
+      description: MCBans Banデータオブジェクトを返します。
 tags:
   - name: Users
   - name: MCBans
