@@ -1,8 +1,32 @@
 openapi: 3.0.0
 info:
-  title: jaoapi v1
+  title: jaoapi
   version: '1.0'
-  description: jao Minecraft Server API Version 1
+  description: |-
+    jao Minecraft Server API Version 1
+
+    Old documentation: https://jaoafa.github.io/api-docs_old/
+
+    ## Basic Infomation
+
+    - BaseURL: `https://api.jaoafa.com/`
+    - Available Version: `v1` (`https://api.jaoafa.com/v1/`)
+    - バージョンを指定せずリクエストすることもできます。その場合、最新バージョンが選択されます。
+    - GETリクエストにおいて、同一エンドポイントに対してのリクエストで同一フィールドを複数指定した場合、?で指定されたフィールドを優先して使用します。
+      - `v1/users/X4Z?mcid=mine_book000`: mcid=`mine_book000`のデータを取得
+      - `v1/users/X4Z?uuid=xxxxx`: uuid=`xxxxx`のデータを取得
+
+    ## Rate Limits
+
+    すべてのエンドポイントにおいて、リクエスト先エンドポイントに関係なく同一IPアドレスからの10秒以内に2回以上のリクエストを規制します。
+    リクエストが規制された場合、レスポンスヘッダーのx-ratelimit-resetに制限が解除されるUNIXTimeが記載されます。
+
+    `/club/token`で取得されたトークンを`usertoken`パラメーターに設定してリクエストした場合、トークンが有効であればレートリミット制限が無効化されます。
+    また、Google reCAPTCHAでの認証トークンを`raterecaptcha`パラメーターに設定してリクエストした場合でも、トークンが有効であればレートリミット制限が無効化されます。
+
+    ## Other Restriction
+
+    開発部は開発部の判断により特定IPからのアクセスを禁止、またはレートリミットを無効化する処置を行うことができます。
   license:
     name: jaoLicense
     url: 'https://github.com/jaoafa/jao-Minecraft-Server/blob/master/jaoLICENSE.md'
@@ -13,6 +37,7 @@ info:
   termsOfService: 'https://jaoafa.com/rule'
 servers:
   - url: 'https://api.jaoafa.com/v1'
+    description: API Server
 components:
   schemas:
     User:
