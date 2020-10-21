@@ -167,7 +167,7 @@ paths:
                     code: 404
                     version: 91945bb4463e9b2ca0d1e82a0224f16cf1003fa3
                     message: No user found with that Minecraft ID.
-      operationId: get-users-minecraft
+      operationId: get-users
       description: |-
         ユーザオブジェクトを返します。
         このエンドポイントで返されるMinecraft IDは最新でない可能性があることに注意してください。jao Minecraft Serverの最終ログインの情報から取得されます。
@@ -189,13 +189,16 @@ paths:
           in: query
           name: discordid
           description: Discord ID
-  '/users/{minecraft_id}':
+  '/users/{any}':
     parameters:
       - schema:
           type: string
-        name: minecraft_id
+          example: X4Z
+          minLength: 1
+        name: any
         in: path
         required: true
+        description: 'Minecraft ID, Minecraft UUID, DiscordIDのいずれか'
     get:
       summary: Get User
       tags:
@@ -274,10 +277,15 @@ paths:
                     code: 404
                     version: 91945bb4463e9b2ca0d1e82a0224f16cf1003fa3
                     message: No user found with that Minecraft ID.
-      operationId: get-users-minecraft_id
+      operationId: get-users-any
       description: |-
         ユーザオブジェクトを返します。
         このエンドポイントで返されるMinecraft IDは最新でない可能性があることに注意してください。jao Minecraft Serverの最終ログインの情報から取得されます。
+
+        OpenAPIの仕様上、異なるパスパラメータのエンドポイントを異なるものとして扱うことができないため、本API仕様書では以下のエンドポイントを同一の`/users/{any}`として記述します。どのエンドポイントを使用しても返却されるレスポンスは変わりません。
+        - GET `/users/{minecraft.id}`
+        - GET `/users/{minecraft.uuid}`
+        - GET `/users/{discord.id}`
       parameters: []
 tags:
   - name: Users
