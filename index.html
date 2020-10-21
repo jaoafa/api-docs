@@ -18,7 +18,19 @@
         </style>
     </head>
     <body>
-        <redoc spec-url='./reference/jaoapi.v1.yaml' hide-download-button="true" no-auto-auth="true" expandResponses="200,201"></redoc>
-        <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
+        <div id="redoc-container"></div>
+        <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
+        <script>
+            Redoc.init("./reference/jaoapi.v1.yaml", {
+                hideDownloadButton: true,
+                noAutoAuth: true,
+                expandResponses: "200,201",
+                theme: {
+                    spacing: {
+                        sectionVertical: 5
+                    }
+                }
+            }, document.getElementById("redoc-container"))
+        </script>
     </body>
 </html>
