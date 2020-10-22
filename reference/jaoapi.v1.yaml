@@ -36,7 +36,7 @@ info:
     url: 'https://jaoafa.com/contact'
     name: Contact
     email: info@jaoafa.com
-  termsOfService: 'https://jaoafa.com/rule'
+  termsOfService: 'https://api.jaoafa.com/tos'
 servers:
   - url: 'https://api.jaoafa.com/v1'
     description: API Server
