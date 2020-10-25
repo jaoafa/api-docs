@@ -283,11 +283,17 @@ components:
           type: string
           description: File last modified
           example: '2015-05-07T08:24:16.697500'
+        download_count:
+          type: integer
+          minimum: 0
+          example: 1
+          description: File download Count
         uploader:
           type: object
           required:
             - mcid
             - uuid
+          description: Item Uploader data
           properties:
             mcid:
               type: string
@@ -295,6 +301,7 @@ components:
               pattern: '^[A-Za-z0-9_]+$'
               minLength: 3
               maxLength: 16
+              description: Item Uploader Minecraft ID
             uuid:
               type: string
               example: 5799296a-d1ec-4252-93bd-440bb9caa65c
@@ -302,12 +309,14 @@ components:
               minLength: 36
               maxLength: 36
               format: uuid
+              description: Item Uploader Minecraft UUID
       required:
         - id
         - name
         - hash
         - bytes
         - last_modified
+        - download_count
         - uploader
   securitySchemes: {}
 paths:
@@ -597,6 +606,213 @@ paths:
                 $ref: '#/components/schemas/Basic-Response'
       operationId: get-users-mcbans-ban-banid
       description: MCBans Banデータオブジェクトを返します。
+  /club/datashare/search:
+    get:
+      summary: Search DataShare Item(s)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    description: Response status
+                  code:
+                    type: integer
+                    example: 200
+                    description: HTTP Status code
+                  version:
+                    type: string
+                    minLength: 1
+                    description: API Minor Version (GitHub Commit ID)
+                  data:
+                    type: array
+                    description: Array of DataShareItem
+                    minItems: 0
+                    items:
+                      $ref: '#/components/schemas/DataShareItem'
+                required:
+                  - status
+                  - code
+                  - version
+                  - data
+      operationId: get-club-datashare-search
+      description: |-
+        パラメータに応じて検索し、DataShareItemオブジェクトを配列で返します。
+
+        パラメータを指定しないとすべてのDataShareItemオブジェクトを返します。複数のパラメータを指定した場合、`id`, `uuid`, `content_type`の順で検索します(それ以外のパラメータは無視されます)。
+
+        `recaptcha`もしくは`usertoken`のどちらかが必須です。
+      parameters:
+        - schema:
+            type: string
+            example: 5799296a-d1ec-4252-93bd-440bb9caa65c
+            pattern: '^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$'
+            minLength: 36
+            maxLength: 36
+            format: uuid
+          in: query
+          name: uuid
+          description: Upload User UUID
+        - schema:
+            type: string
+            example: application/octet-stream
+            minLength: 1
+          in: query
+          name: content_type
+          description: Content Type
+        - schema:
+            type: string
+          in: query
+          name: recaptcha
+          description: Google reCAPTCHA
+        - schema:
+            type: string
+          in: query
+          name: usertoken
+          description: clubjaoafa User Token
+      tags:
+        - Club-DataShare
+    parameters: []
+  '/club/datashare/{datashareitemid}':
+    get:
+      summary: Get DataShare Item
+      tags:
+        - Club-DataShare
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                description: File binary
+                format: binary
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basic-Response'
+      operationId: get-club-datashare
+      description: DataShareのアイテムを取得(ダウンロード)します。
+      parameters: []
+    delete:
+      summary: Delete DataShare Item
+      tags:
+        - Club-DataShare
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basic-Response'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basic-Response'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    description: Response status
+                  code:
+                    type: integer
+                    example: 200
+                    description: HTTP Status code
+                  version:
+                    type: string
+                    minLength: 1
+                    description: API Minor Version (GitHub Commit ID)
+                required:
+                  - status
+                  - code
+                  - version
+      operationId: delete-club-datashare
+      description: |
+        DataShareのアイテムを削除します。
+    parameters:
+      - schema:
+          type: integer
+        name: datashareitemid
+        in: path
+        description: DataShareItem ID
+        required: true
+  /club/datashare:
+    post:
+      summary: Upload DataShare Item
+      tags:
+        - Club-DataShare
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basic-Response'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basic-Response'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basic-Response'
+      operationId: post-club-datashare
+      description: |-
+        DataShareにアイテムをアップロードします。
+
+        - アップロードできるファイルのファイルサイズは100MBまでです。
+        - ConoHaオブジェクトストレージにアップロードされるファイルのファイル名は次のように書き換えられます: `<UUID>_<DataShareItemID>.<EXT>`
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  description: Item name
+                  example: jao鯖リソースパック
+                description:
+                  type: string
+                  description: Item description
+                  minLength: 0
+                  example: jao Minecraft Serverの非公式リソースパックです。起動画面と絵画が変更されます。
+                file:
+                  type: string
+                  format: binary
+                  description: Upload file
+                usertoken:
+                  type: string
+                  pattern: '^[a-z0-9]+$'
+                  minLength: 32
+                  maxLength: 32
+                  example: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                  description: clubjaoafa User Token
+              required:
+                - name
+                - description
+                - file
+                - usertoken
 tags:
   - name: Users
   - name: User-MCBans
