@@ -88,6 +88,8 @@ components:
         - discordid
         - permission
         - lastlogin
+      x-tags:
+        - Users
     MCBans-User:
       description: MCBansユーザデータオブジェクト
       type: object
@@ -247,6 +249,66 @@ components:
         - updated_at
       x-tags:
         - User-MCBans
+    DataShareItem:
+      title: DataShareItem
+      type: object
+      x-tags:
+        - Club
+      description: |-
+        DataShareにアップロードされているアイテムのオブジェクト
+
+        hash, bytes, last_modifiedはConoHaのAPIから取得。それ以外はjaoMainデータベースより
+
+        参考: https://www.conoha.jp/docs/swift-show_container_details_and_list_objects.php
+      properties:
+        id:
+          type: integer
+          description: DataShareItem ID
+          example: 1
+          minimum: 1
+        name:
+          type: string
+          description: File name (DBデータ)
+          example: jaoafa.zip
+        hash:
+          type: string
+          description: File hash
+          example: 1276481102f218c981e0324180bafd9f
+          minLength: 32
+        bytes:
+          type: integer
+          description: File size(bytes)
+          example: 10240
+        last_modified:
+          type: string
+          description: File last modified
+          example: '2015-05-07T08:24:16.697500'
+        uploader:
+          type: object
+          required:
+            - mcid
+            - uuid
+          properties:
+            mcid:
+              type: string
+              example: X4Z
+              pattern: '^[A-Za-z0-9_]+$'
+              minLength: 3
+              maxLength: 16
+            uuid:
+              type: string
+              example: 5799296a-d1ec-4252-93bd-440bb9caa65c
+              pattern: '^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$'
+              minLength: 36
+              maxLength: 36
+              format: uuid
+      required:
+        - id
+        - name
+        - hash
+        - bytes
+        - last_modified
+        - uploader
   securitySchemes: {}
 paths:
   /users:
@@ -538,4 +600,6 @@ paths:
 tags:
   - name: Users
   - name: User-MCBans
+  - name: Club
+  - name: Club-DataShare
 security: []
